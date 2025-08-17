@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Panel</h1>
+    <div id="result">
+      <h3>Buzzer Presses:</h3>
+      <!-- Real-time buzzer press results will be displayed here -->
+    </div>
+    <button id="resetButton">Reset Results</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();  // Connect to the server
+
+    // Listen for real-time updates from all team pages
+    socket.on('updateResults', (buzzerPresses) => {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<h3>Buzzer Presses:</h3>';  // Clear previous results
+      
+      // Loop through the buzzer presses and display them
+      buzzerPresses.forEach((press, index) => {
+        const pressElement = document.createElement('p');
+        pressElement.textContent = `Press #${index + 1}: ${press.teamName} at ${press.time}`;
+        resultDiv.appendChild(pressElement);
+      });
+    });
+
+    // Handle reset button click to reset the results
+    document.getElementById("resetButton").addEventListener("click", () => {
+      socket.emit('reset');  // Notify the server to reset the results
+    });
+
+    // Listen for the resetAll event to reset the team pages as well
+    socket.on('resetAll', () => {
+      // The server will emit a 'resetAll' event to reset team pages
+      console.log("Reset event received. Admin and team pages should reset.");
+    });
+  </script>
+</body>
+</html>

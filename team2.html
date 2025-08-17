@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Innvators</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General reset and body styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 90%; /* Flexible width for responsiveness */
+      max-width: 380px; /* Maximum width */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 36px; /* Bigger font size */
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: bold; /* Bold font for the header */
+    }
+
+    #status {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    #info {
+      font-size: 14px;
+      color: #777;
+    }
+
+    /* Buzzer button styles */
+    #buzzer {
+      background: linear-gradient(45deg, #75a4c8, #6b94eb); /* Yellow to orange gradient */
+      border: none;
+      color: white;
+      font-size: 36px;  /* Larger text for the button */
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    #buzzer:disabled {
+      background-color: #d3d3d3;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #buzzer:hover {
+      background: linear-gradient(45deg, #52a7e4, #adcbf0); /* Reverse gradient on hover */
+      transform: scale(1.1); /* Slightly enlarge on hover */
+    }
+
+    /* Mobile-responsive button */
+    @media (max-width: 480px) {
+      #buzzer {
+        width: 200px;
+        height: 200px;
+        font-size: 32px;  /* Adjust font size for smaller screen */
+      }
+
+      h1 {
+        font-size: 28px; /* Slightly smaller header */
+      }
+
+      #status {
+        font-size: 18px; /* Adjust status font size */
+      }
+    }
+
+    /* For tablets or larger mobile screens */
+    @media (max-width: 768px) {
+      #buzzer {
+        width: 220px;
+        height: 220px;
+        font-size: 34px;  /* Adjust font size for tablets */
+      }
+
+      h1 {
+        font-size: 32px; /* Slightly smaller header for tablets */
+      }
+
+      #status {
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Innvators</h1>
+    <p id="status">Press the buzzer!</p>
+    <button id="buzzer">Press</button>
+    <p id="info"></p>
+  </div>
+
+  <!-- Audio element to play sound -->
+  <audio id="buzzerSound" src="buzzer-sound.mp3" preload="auto"></audio>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();  // Connect to the server
+
+    let buzzerPressed = false;
+
+    document.getElementById("buzzer").addEventListener("click", function () {
+      if (!buzzerPressed) {
+        buzzerPressed = true;
+        document.getElementById("status").textContent = "You pressed the buzzer!";
+        document.getElementById("buzzer").disabled = true;  // Disable the buzzer button
+
+        // Play the buzzer sound
+        const buzzerSound = document.getElementById("buzzerSound");
+        buzzerSound.play();
+
+        const currentTime = new Date().toLocaleTimeString();
+        socket.emit('buzzerPress', 'Innvators', currentTime);  // Change 'Innvators' to your team name
+      } else {
+        document.getElementById("status").textContent = "You already pressed the buzzer!";
+      }
+    });
+  </script>
+</body>
+</html>
